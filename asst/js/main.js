@@ -1,5 +1,9 @@
 const inputs = Array.from(document.querySelectorAll(".form-control"));
 const bookMarkForm = document.querySelector(".bookMarkForm");
+const removeAllBtn=document.querySelector(".removeAll")
+
+
+
 
 // must be implemented outside the loop, because if it is inside a loop, a new array will be created on each click
 // must check if there is data in localStorage, if not it will be [], same as in loop
@@ -7,8 +11,20 @@ let sites = JSON.parse(localStorage.getItem("sites")) || [];
 
 bookMarkForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevent page refresh on submit
+
+  //  to  ceak  the  inputes  is  it  valid  or  not 
+  let isValid=true;
+  if( !validateSiteNmae()){
+    isValid=false;
+  }
+  
+
+  if(isValid==false)return;
+
+
+
+ // object to get and store data from form
   const site = {
-    // object to get and store data from form
     siteName: inputs[0].value,
     siteUrl: inputs[1].value,
     userName: inputs[2].value,
@@ -24,17 +40,26 @@ bookMarkForm.addEventListener("submit", (e) => {
   displaySites(); // call after each add to display data in table
 });
 
+removeAllBtn.addEventListener("click",function(){
+  localStorage.removeItem("sites");
+  sites=[];
+  displaySites();
+});
+
+
 // function to display data in table
 const displaySites = () => {
   // use map
   const result = sites
-    .map((site) => {
+    .map((site ,index) => {
       // use map to add html using js
       return `<tr> 
           <td>${site.siteName}</td> 
           <td>${site.siteUrl}</td> 
           <td>${site.userName}</td> 
           <td>${site.sitepass}</td> 
+          <td><button class=" btn text-danger border-danger rounded-0 text-uppercase "  onclick='removeBookMark(${index})'>remove  </button></td> 
+
         </tr>`;
     })
     .join(" "); // when using map, always use join to convert array to string and remove commas
@@ -42,3 +67,40 @@ const displaySites = () => {
 };
 
 displaySites();
+
+//  cheak  the  site  name  
+//  regex  is  bulid  from  zero  to  cheak  the  data  
+const validateSiteNmae=()=>{
+
+  const regex = /^[A-Z][a-zA-Z]{2,}$/;
+
+  if( ! regex.test(inputs[0].value)){
+       inputs[0].classList.add("is-invalid");
+       inputs[0].classList.remove("is-valid");
+
+       return false;
+
+    }else{
+       inputs[0].classList.add("is-valid");
+       inputs[0].classList.remove("is-invalid");
+       return true;
+    }
+
+}
+
+
+//  its  work  whe  the  user  is  inter  the  data  in  site name  
+//  input  /  or  blue  can  be  
+inputs[0].addEventListener('blur',validateSiteNmae);
+
+
+const removeBookMark=(index)=>{
+  alert("  are  you  sure  to  remove the  item ?");
+
+  sites.splice(index,1);
+  localStorage.setItem("sites",JSON.stringify(sites));
+  displaySites();
+
+
+
+}
