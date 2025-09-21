@@ -1,6 +1,8 @@
 const inputs = Array.from(document.querySelectorAll(".form-control"));
 const bookMarkForm = document.querySelector(".bookMarkForm");
-const removeAllBtn=document.querySelector(".removeAll")
+const removeAllBtn=document.querySelector(".removeAll");
+const searchInput=document.querySelector(".search-input");
+const massegeAlertInput=Array.from(document.querySelectorAll(".error_input"));
 
 
 
@@ -49,7 +51,7 @@ removeAllBtn.addEventListener("click",function(){
 
 // function to display data in table
 const displaySites = () => {
-  // use map
+  // use map with  index  
   const result = sites
     .map((site ,index) => {
       // use map to add html using js
@@ -77,12 +79,15 @@ const validateSiteNmae=()=>{
   if( ! regex.test(inputs[0].value)){
        inputs[0].classList.add("is-invalid");
        inputs[0].classList.remove("is-valid");
+       massegeAlertInput[0].textContent=" invaled  name  you  must  start  with  capital  liter";
 
        return false;
 
     }else{
        inputs[0].classList.add("is-valid");
        inputs[0].classList.remove("is-invalid");
+       massegeAlertInput[0].textContent="";
+
        return true;
     }
 
@@ -104,3 +109,30 @@ const removeBookMark=(index)=>{
 
 
 }
+
+
+searchInput.addEventListener("input" , ()=>{
+   const fiLterText=searchInput.value.toLowerCase();
+
+   const fiLteredSites=sites.filter((site)=>{
+
+    return site.siteName.toLowerCase().includes(fiLterText);
+   }) ;
+
+const result = fiLteredSites
+    .map((site ,index) => {
+      // use map to add html using js
+      return `<tr> 
+          <td>${site.siteName}</td> 
+          <td>${site.siteUrl}</td> 
+          <td>${site.userName}</td> 
+          <td>${site.sitepass}</td> 
+          <td><button class=" btn text-danger border-danger rounded-0 text-uppercase "  onclick='removeBookMark(${index})'>remove  </button></td> 
+
+        </tr>`;
+    })
+    .join(" "); // when using map, always use join to convert array to string and remove commas
+  document.querySelector(".sites_data").innerHTML = result; 
+});
+
+
